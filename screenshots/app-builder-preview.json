@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "本值 — 支撑、压力、右侧",
+      "hasCanvas": false,
+      "bodyTextLen": 91,
+      "bodyTextHash": "1b3cba23baf54a040302521d2f612354973bce0080b9cd96706f36049d698ac2",
+      "bodyTextPrefix": "本值 管理 管理员登录 支撑、压力、右侧。 一整段贴进来，按区间切开。强弱和备注留在每一档旁边。 位置暂时读不出来，刷新再试。 ",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "本值 — 支撑、压力、右侧",
+      "hasCanvas": false,
+      "bodyTextLen": 88,
+      "bodyTextHash": "ea3b41ee0ecef809201729c6fabbbb602f97e599f2ecd59646ea97a9ae1a7913",
+      "bodyTextPrefix": "本值 管理员登录 支撑、压力、右侧。 一整段贴进来，按区间切开。强弱和备注留在每一档旁边。 位置暂时读不出来，刷新再试。 位置由",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-preview.json"
+}

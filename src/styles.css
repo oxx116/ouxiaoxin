@@ -1,0 +1,280 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Ma Shan Zheng";
+  src: url("/fonts/ma-shan-zheng.ttf") format("truetype");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Cormorant Garamond";
+  src: url("/fonts/cormorant-0.ttf") format("truetype");
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Bodoni Moda";
+  src: url("/fonts/bodoni-0.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Cinzel";
+  src: url("/fonts/cinzel-0.ttf") format("truetype");
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Cinzel";
+  src: url("/fonts/cinzel-1.ttf") format("truetype");
+  font-weight: 700;
+  font-display: swap;
+}
+
+@theme {
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC",
+    "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", "WenQuanYi Zen Hei",
+    sans-serif;
+  --font-brush: "Ma Shan Zheng", cursive;
+  --font-latin: "Cinzel", "Palatino Linotype", Palatino, serif;
+  --font-display: "Cormorant Garamond", "Bodoni Moda", Didot, "Times New Roman", serif;
+  --color-bg: #f5f5f7;
+  --color-surface: #ffffff;
+  --color-ink: #1d1d1f;
+  --color-muted: #6e6e73;
+  --color-faint: #86868b;
+  --color-line: #e6e6eb;
+  --color-good: #1d7a45;
+  --color-good-soft: #e8f6ee;
+  --color-bad: #c41e16;
+  --color-bad-soft: #fdeceb;
+}
+
+.ticker-mark {
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.38),
+    inset 0 0 6px rgb(255 255 255 / 0.14),
+    0 0 0 0.5px rgb(255 255 255 / 0.16),
+    0 1px 2px rgb(0 0 0 / 0.04);
+}
+
+@utility card-shadow {
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.04);
+}
+
+.heart-beat {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: heart-beat 0.78s cubic-bezier(0.22, 0.8, 0.3, 1);
+}
+
+.heart-half {
+  transform-origin: 12px 12px;
+  transform-box: view-box;
+}
+
+.heart-half-left {
+  clip-path: inset(0 50% 0 0);
+  animation: heart-left 1.7s cubic-bezier(0.22, 0.7, 0.3, 1) forwards;
+}
+
+.heart-half-right {
+  clip-path: inset(0 0 0 50%);
+  animation: heart-right 1.7s cubic-bezier(0.22, 0.7, 0.3, 1) forwards;
+}
+
+.heart-pop {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: heart-pop 0.42s cubic-bezier(0.2, 0.85, 0.28, 1);
+}
+
+@keyframes heart-pop {
+  0% { transform: scale(0.35); opacity: 0; }
+  62% { transform: scale(1.14); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes heart-beat {
+  0% { transform: scale(1); }
+  16% { transform: scale(1.2); }
+  32% { transform: scale(0.94); }
+  50% { transform: scale(1.12); }
+  68% { transform: scale(0.98); }
+  100% { transform: scale(1); }
+}
+
+@keyframes heart-left {
+  0% { transform: translate(0, 0) rotate(0); opacity: 1; }
+  28% { transform: translate(-0.4px, 0.2px) rotate(-3deg); opacity: 1; }
+  100% { transform: translate(-5px, 3px) rotate(-14deg); opacity: 0; }
+}
+
+@keyframes heart-right {
+  0% { transform: translate(0, 0) rotate(0); opacity: 1; }
+  28% { transform: translate(0.4px, 0.2px) rotate(3deg); opacity: 1; }
+  100% { transform: translate(5px, 3px) rotate(14deg); opacity: 0; }
+}
+
+@keyframes heart-outline {
+  0%,
+  40% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heart-beat,
+  .heart-half-left,
+  .heart-half-right,
+  .heart-pop {
+    animation: none;
+  }
+}
+
+.search-glass-color {
+  animation: search-glass 1.6s ease forwards;
+}
+
+@keyframes search-glass {
+  0% {
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.welcome-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f4f3ef;
+  pointer-events: none;
+  animation: welcome-veil 4.2s ease forwards;
+}
+
+.welcome-word,
+.welcome-name {
+  font-family: var(--font-display);
+  color: #1d1d1f;
+  animation: welcome-rise 4.2s ease forwards;
+}
+
+.welcome-word {
+  font-size: clamp(4.5rem, 12vw, 7.5rem);
+  font-weight: 500;
+  line-height: 1;
+}
+
+.welcome-name {
+  margin-top: 0.6rem;
+  font-size: 1.6rem;
+  font-style: italic;
+  letter-spacing: 0.08em;
+  opacity: 0;
+  animation-delay: 0.18s;
+}
+
+@keyframes welcome-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  18% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  72% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+}
+
+@keyframes welcome-veil {
+  0%,
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes login-bar {
+  to {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+.login-bar {
+  opacity: 0;
+  transform: scaleY(0);
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  animation: login-bar 0.7s ease forwards;
+}
+
+@keyframes logo-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.logo-marquee-track {
+  animation: logo-marquee 110s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-marquee-track,
+  .login-bar {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+  }
+  body {
+    background: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  ::selection {
+    background: #d7eadf;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

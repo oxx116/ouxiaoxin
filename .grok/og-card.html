@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="fonts/local.css" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 1200px;
+    height: 630px;
+    overflow: hidden;
+    background: #F5F5F7;
+    color: #1D1D1F;
+    font-family: "Noto Sans SC", "WenQuanYi Zen Hei", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  main {
+    width: 1200px;
+    height: 630px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 92px 0 100px;
+  }
+  .mark {
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 0.42em;
+    line-height: 1;
+    color: #1D1D1F;
+  }
+  h1 {
+    margin-top: 28px;
+    font-size: 84px;
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: -0.035em;
+    color: #1D1D1F;
+  }
+  .card {
+    width: 312px;
+    flex: none;
+    background: #ffffff;
+    border-radius: 28px;
+    padding: 36px 32px 32px;
+    box-shadow:
+      0 1px 1px rgba(0, 0, 0, 0.03),
+      0 18px 44px rgba(0, 0, 0, 0.06);
+  }
+  .kicker {
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: #86868b;
+    line-height: 1;
+  }
+  .pct {
+    margin-top: 16px;
+    font-size: 76px;
+    font-weight: 600;
+    letter-spacing: -0.045em;
+    line-height: 0.9;
+    color: #1D7A45;
+    font-variant-numeric: tabular-nums;
+  }
+  .note {
+    margin-top: 14px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #86868b;
+    letter-spacing: 0.01em;
+  }
+  .rule {
+    height: 1px;
+    background: #E8E8ED;
+    margin: 26px 0 22px;
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .row + .row { margin-top: 16px; }
+  .lab {
+    width: 32px;
+    flex: none;
+    font-size: 14px;
+    font-weight: 500;
+    color: #86868b;
+  }
+  .track {
+    flex: 1;
+    height: 6px;
+    border-radius: 999px;
+    background: #E8E8ED;
+    overflow: hidden;
+  }
+  .fill { display: block; height: 100%; border-radius: 999px; }
+  .fill.ink { width: 100%; background: #1D1D1F; }
+  .fill.green { width: 62%; background: #1D7A45; }
+</style>
+</head>
+<body>
+  <main>
+    <div class="copy">
+      <div class="mark">本值</div>
+      <h1>看清一家公司<br />值多少。</h1>
+    </div>
+    <aside class="card">
+      <div class="kicker">安全边际</div>
+      <div class="pct">38%</div>
+      <p class="note">价格低于保守价值</p>
+      <div class="rule"></div>
+      <div class="row">
+        <span class="lab">价值</span>
+        <span class="track"><span class="fill ink"></span></span>
+      </div>
+      <div class="row">
+        <span class="lab">现价</span>
+        <span class="track"><span class="fill green"></span></span>
+      </div>
+    </aside>
+  </main>
+</body>
+</html>

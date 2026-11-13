@@ -1,0 +1,38 @@
+{
+  "url": "http://127.0.0.1:8081/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "本值 — 支撑、压力、右侧",
+      "hasCanvas": false,
+      "bodyTextLen": 110,
+      "bodyTextHash": "09cff76b9d935e194c1ea05bfcc8f5af32b19ff857cdd4a9744ab7430300d9e3",
+      "bodyTextPrefix": "本值 管理 管理员登录 支撑、压力、右侧。 位置由管理员手动更新。右侧突破之后，收盘价单独亮出来。 还没有位置。 管理员登录后，",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-built.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "本值 — 支撑、压力、右侧",
+      "hasCanvas": false,
+      "bodyTextLen": 107,
+      "bodyTextHash": "1461ec60b63867dbb0fdb9b81ac5e050a57e024799fdaa0a90a76c11cb23f232",
+      "bodyTextPrefix": "本值 管理员登录 支撑、压力、右侧。 位置由管理员手动更新。右侧突破之后，收盘价单独亮出来。 还没有位置。 管理员登录后，在管理",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-built-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-built.json",
+  "divergesFromBaseline": false,
+  "baselineReasons": []
+}
