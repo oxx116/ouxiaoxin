@@ -42,9 +42,9 @@ const nasdaq100 = [
 
 function SearchGlass({ color = false }: { color?: boolean }) {
   return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className={color ? "search-glass-color absolute inset-0 size-9" : "size-9"}>
-      <circle cx="10.5" cy="10.5" r="6.25" fill="none" stroke={color ? "url(#gemini-glass)" : "currentColor"} strokeWidth="2.6" />
-      <path d="M15.2 15.2 20 20" fill="none" stroke={color ? "url(#gemini-glass)" : "currentColor"} strokeWidth="2.6" strokeLinecap="round" />
+    <svg viewBox="0 0 24 24" aria-hidden="true" className={color ? "search-glass-color absolute inset-0 size-8" : "size-8"}>
+      <circle cx="10.5" cy="10.5" r="6.25" fill="none" stroke={color ? "url(#gemini-glass)" : "currentColor"} strokeWidth="2.4" />
+      <path d="M15.2 15.2 20 20" fill="none" stroke={color ? "url(#gemini-glass)" : "currentColor"} strokeWidth="2.4" strokeLinecap="round" />
       {color ? (
         <defs>
           <linearGradient id="gemini-glass" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
@@ -70,9 +70,9 @@ function LogoMarquee({ className = "" }: { className?: string }) {
             src={`https://assets.parqet.com/logos/symbol/${ticker}`}
             alt=""
             title={ticker}
-            width={40}
-            height={40}
-            className="ticker-mark h-10 w-10 shrink-0 rounded-xl bg-white/80 object-contain p-1"
+            width={36}
+            height={36}
+            className="ticker-mark h-9 w-9 shrink-0 rounded-xl border border-black/5 bg-white/90 object-contain p-1 shadow-2xs"
             loading="lazy"
             decoding="async"
             onError={(event) => event.currentTarget.remove()}
@@ -219,109 +219,113 @@ function Home() {
 
   return (
     <RequireAccess>
-    {hello ? (
-      <WelcomeSplash line={hello === "back" ? "歡迎回來" : "歡迎"} onDone={() => setHello("")} />
-    ) : null}
-    <main className="mx-auto max-w-7xl px-5 pb-10 md:pb-14">
-      <div className={focus || shown ? "hidden" : undefined}>
-      <section className="mx-auto w-full max-w-xl px-5 pb-2 pt-10 text-center md:pt-14">
-          <h1 className="font-latin text-4xl font-medium tracking-[0.04em] text-[#006747] md:text-5xl">
-            <span className="text-ink">F</span>ind <span className="text-ink">a</span> <span className="text-ink">S</span>tock
-          </h1>
-          <form onSubmit={search} className="mx-auto mt-6 flex gap-3 text-left">
-        <label className="relative min-w-0 flex-1">
-          <span className="sr-only">Search ticker or name</span>
-          <input
-            id="stock-search"
-            value={query}
-            placeholder="Search ticker or name, e.g. TSM"
-            autoComplete="off"
-            onChange={(event) => setQuery(event.target.value)}
-            className="h-14 w-full rounded-full border border-black/10 bg-white px-6 pr-20 text-lg text-ink shadow-sm outline-none placeholder:text-faint"
-          />
-          <kbd className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 rounded-md border border-black/10 bg-white/90 px-1.5 py-0.5 text-[11px] tracking-wide text-faint">
-            {keys}
-          </kbd>
-        </label>
-        <button
-          type="submit"
-          aria-label="Search"
-          className="grid h-14 w-14 shrink-0 place-items-center text-ink"
-        >
-          <span className="relative grid size-9 place-items-center">
-            {spark > 0 ? <SearchGlass key={spark} color /> : <SearchGlass />}
-          </span>
-        </button>
-      </form>
-
-      {failed ? <p className="mt-6 text-bad">位置暂时读不出来，刷新再试。</p> : null}
-
-      {choices.length > 0 ? (
-        <ul className="card-shadow mt-3 overflow-hidden rounded-3xl bg-surface">
-          {choices.map((level) => (
-            <li key={level.id} className="flex items-center border-b border-line last:border-0">
+      {hello ? (
+        <WelcomeSplash line={hello === "back" ? "歡迎回來" : "歡迎"} onDone={() => setHello("")} />
+      ) : null}
+      <main className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 md:pb-16">
+        <div className={focus || shown ? "hidden" : undefined}>
+          <section className="mx-auto w-full max-w-2xl px-2 pb-2 pt-8 text-center md:pt-12">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#006747]/15 bg-[#006747]/5 px-3.5 py-1 text-xs font-medium text-[#006747]">
+              <span className="size-1.5 rounded-full bg-[#00a650]" />
+              MetricTrader · 美股右侧量化监测终端
+            </div>
+            <h1 className="mt-4 font-latin text-4xl font-semibold tracking-[0.03em] text-[#006747] md:text-5xl">
+              <span className="text-ink">F</span>ind <span className="text-ink">a</span> <span className="text-ink">S</span>tock
+            </h1>
+            <form onSubmit={search} className="mx-auto mt-6 flex items-center gap-2.5 text-left">
+              <label className="relative min-w-0 flex-1">
+                <span className="sr-only">Search ticker or name</span>
+                <input
+                  id="stock-search"
+                  value={query}
+                  placeholder="输入美股代码或名称，例如 TSM、NVDA..."
+                  autoComplete="off"
+                  onChange={(event) => setQuery(event.target.value)}
+                  className="h-14 w-full rounded-full border border-black/10 bg-white px-6 pr-20 text-base text-ink shadow-sm transition-shadow outline-none placeholder:text-faint focus:border-[#006747]/40 focus:ring-4 focus:ring-[#006747]/10 md:text-lg"
+                />
+                <kbd className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 rounded-lg border border-black/10 bg-[#f8f8f6] px-2 py-0.5 text-[11px] font-medium tracking-wide text-faint">
+                  {keys}
+                </kbd>
+              </label>
               <button
-                type="button"
-                className="flex h-14 min-w-0 flex-1 items-center justify-between px-6 text-left"
-                onClick={() => openStock(level.ticker || level.name)}
+                type="submit"
+                aria-label="Search"
+                className="grid h-14 w-14 shrink-0 place-items-center rounded-full border border-black/10 bg-white text-ink shadow-sm transition-transform hover:scale-105 active:scale-95"
               >
-                <span className="flex items-center gap-2 font-bold text-ink">
-                  <TickerLogo ticker={level.ticker || level.name} />
-                  {level.ticker || level.name}
+                <span className="relative grid size-8 place-items-center">
+                  {spark > 0 ? <SearchGlass key={spark} color /> : <SearchGlass />}
                 </span>
-                {level.name && level.ticker ? <span className="text-sm text-faint">{level.name}</span> : null}
               </button>
-              <span className="pr-4">
-                <WatchMark ticker={level.ticker || level.name} quiet />
-              </span>
-            </li>
-          ))}
-        </ul>
-      ) : null}
+            </form>
 
-      {needle && rows && matches.length === 0 ? (
-        <p className="mt-6 text-sm text-ink">无观察结果，敬请期待</p>
-      ) : null}
-      </section>
-      {needle ? null : <LogoMarquee className="mt-6 pb-2" />}
-      </div>
+            {failed ? <p className="mt-6 text-sm font-medium text-bad">位置数据暂时无法读取，请刷新重试。</p> : null}
 
-      {needle ? null : (
-        <WatchCards
-          rows={rows ?? []}
-          moves={moves}
-          entered={boardEntered}
-          focus={focus}
-          onFocus={setFocus}
-          onOpen={(level) => {
-            setQuery(level.ticker || level.name);
-            openStock(level.ticker || level.name);
-          }}
-        />
-      )}
+            {choices.length > 0 ? (
+              <ul className="card-shadow mt-3 overflow-hidden rounded-3xl border border-black/5 bg-surface">
+                {choices.map((level) => (
+                  <li key={level.id} className="flex items-center border-b border-line last:border-0">
+                    <button
+                      type="button"
+                      className="flex h-14 min-w-0 flex-1 items-center justify-between px-6 text-left transition-colors hover:bg-[#f4f7f5]"
+                      onClick={() => openStock(level.ticker || level.name)}
+                    >
+                      <span className="flex items-center gap-2.5 font-bold text-ink">
+                        <TickerLogo ticker={level.ticker || level.name} />
+                        {level.ticker || level.name}
+                      </span>
+                      {level.name && level.ticker ? <span className="truncate pl-4 text-sm text-faint">{level.name}</span> : null}
+                    </button>
+                    <span className="pr-4">
+                      <WatchMark ticker={level.ticker || level.name} quiet />
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
 
-      {needle || focus ? null : (
-        <BreakoutReturnCard
-          rows={rows ?? []}
-          exits={exits}
-          onOpen={(ticker) => {
-            openStock(ticker);
-          }}
-        />
-      )}
+            {needle && rows && matches.length === 0 ? (
+              <p className="mt-6 text-sm text-muted">无观察结果，敬请期待</p>
+            ) : null}
+          </section>
+          {needle ? null : <LogoMarquee className="mt-5 pb-2" />}
+        </div>
 
-      {shown ? (
-        <StockPanel
-          level={shown}
-          backHref={fromWatch ? "/watch" : ""}
-          onBack={() => {
-            setQuery("");
-            setSubmitted("");
-            window.scrollTo(0, 0);
-          }}
-        />
-      ) : null}
-    </main>
+        {needle ? null : (
+          <WatchCards
+            rows={rows ?? []}
+            moves={moves}
+            entered={boardEntered}
+            focus={focus}
+            onFocus={setFocus}
+            onOpen={(level) => {
+              setQuery(level.ticker || level.name);
+              openStock(level.ticker || level.name);
+            }}
+          />
+        )}
+
+        {needle || focus ? null : (
+          <BreakoutReturnCard
+            rows={rows ?? []}
+            exits={exits}
+            onOpen={(ticker) => {
+              openStock(ticker);
+            }}
+          />
+        )}
+
+        {shown ? (
+          <StockPanel
+            level={shown}
+            backHref={fromWatch ? "/watch" : ""}
+            onBack={() => {
+              setQuery("");
+              setSubmitted("");
+              window.scrollTo(0, 0);
+            }}
+          />
+        ) : null}
+      </main>
     </RequireAccess>
   );
 }
@@ -373,7 +377,7 @@ function pnlPill(value: number) {
 
 function Stamp({ word, color }: { word: "WIN" | "LOSS"; color: string }) {
   return (
-    <svg viewBox="0 0 88 88" aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 h-16 w-16 -translate-y-1/2 -rotate-12">
+    <svg viewBox="0 0 88 88" aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 h-16 w-16 -translate-y-1/2 -rotate-12 opacity-85">
       <circle cx="44" cy="44" r="36" fill="none" stroke={color} strokeWidth="2.4" />
       <circle cx="44" cy="44" r="30" fill="none" stroke={color} strokeWidth="1" />
       <text
@@ -434,10 +438,13 @@ function BreakoutReturnCard({
   const total = totalCost <= 0 ? null : (totalValue - totalCost) / totalCost;
   const history = page ? closed.filter((item) => item.kind === page) : [];
   return (
-    <section className="mx-auto mt-4 w-full max-w-5xl rounded-3xl bg-[#f3f4f6] px-4 py-4 md:px-5">
-      <div className="flex items-end justify-between gap-4 border-b border-black/10 pb-3">
-        <h2 className="text-xl font-bold tracking-tight text-ink">Cumulative Return</h2>
-        <p className={`text-3xl font-semibold tabular-nums tracking-tight ${total == null ? "text-ink" : pnlTone(total)}`}>
+    <section className="mx-auto mt-6 w-full max-w-5xl rounded-3xl border border-black/5 bg-[#f3f4f6] px-4 py-5 shadow-xs md:px-6">
+      <div className="flex items-end justify-between gap-4 border-b border-black/10 pb-3.5">
+        <div>
+          <span className="text-[11px] font-semibold tracking-wider text-muted uppercase">Portfolio Performance</span>
+          <h2 className="text-xl font-bold tracking-tight text-ink">Cumulative Return</h2>
+        </div>
+        <p className={`text-3xl font-bold tabular-nums tracking-tight ${total == null ? "text-ink" : pnlTone(total)}`}>
           {total == null ? "—" : signedReturn(total)}
         </p>
       </div>
@@ -446,7 +453,7 @@ function BreakoutReturnCard({
           <button
             type="button"
             onClick={() => setPage(null)}
-            className="inline-flex h-10 items-center gap-2 rounded-full bg-surface px-4 text-sm font-medium text-ink shadow-sm transition-colors hover:bg-[#eef6ef]"
+            className="inline-flex h-10 items-center gap-2 rounded-full bg-surface px-4 text-sm font-medium text-ink shadow-xs transition-colors hover:bg-[#eef6ef]"
           >
             <span aria-hidden="true">←</span>
             返回 Holdings
@@ -461,13 +468,13 @@ function BreakoutReturnCard({
                   key={item.id}
                   type="button"
                   onClick={() => onOpen(item.ticker)}
-                  className="rounded-xl bg-surface px-3 py-2.5 text-left shadow-sm transition-colors hover:bg-[#eef6ef]"
+                  className="rounded-2xl border border-black/5 bg-surface px-4 py-3 text-left shadow-xs transition-all hover:-translate-y-0.5 hover:bg-[#eef6ef]"
                 >
-                  <p className="flex items-center gap-2 text-3xl font-bold tracking-tight text-ink">
+                  <p className="flex items-center gap-2 text-2xl font-bold tracking-tight text-ink">
                     <TickerLogo ticker={item.ticker} />
                     {item.ticker}
                   </p>
-                  <div className="mt-2 flex items-end justify-between gap-2 border-b border-line pb-2">
+                  <div className="mt-2.5 flex items-end justify-between gap-2 border-b border-line pb-2">
                     <div>
                       <p className="text-[11px] text-faint">Entry</p>
                       <p className="text-base font-semibold tabular-nums text-ink">{showPrice(String(item.cost))}</p>
@@ -481,9 +488,9 @@ function BreakoutReturnCard({
                     </div>
                     {item.exitedOn ? <p className="text-[11px] text-muted">ET {item.exitedOn}</p> : null}
                   </div>
-                  <div className="mt-2">
-                    <p className="text-[11px] text-faint">收益率</p>
-                    <p className={`mt-1 text-sm font-semibold tabular-nums ${pnlTone(item.ret)}`}>{signedReturn(item.ret)}</p>
+                  <div className="mt-2 flex items-center justify-between">
+                    <span className="text-[11px] text-faint">收益率</span>
+                    <span className={`text-sm font-bold tabular-nums ${pnlTone(item.ret)}`}>{signedReturn(item.ret)}</span>
                   </div>
                 </button>
               ))}
@@ -494,83 +501,90 @@ function BreakoutReturnCard({
         </div>
       ) : (
         <>
-        <section className="mt-4 rounded-2xl bg-surface px-3 py-3 shadow-sm">
-          <h3 className="px-1 font-latin text-2xl font-medium tracking-[0.04em] text-[#006747]">Holdings</h3>
-          {items.length > 0 ? (
-        <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((item) => (
+          <section className="mt-4 rounded-2xl border border-black/5 bg-surface px-4 py-3.5 shadow-xs">
+            <div className="flex items-center justify-between px-1">
+              <h3 className="font-latin text-2xl font-medium tracking-[0.04em] text-[#006747]">Holdings</h3>
+              <span className="text-xs text-muted">共 {items.length} 只持仓</span>
+            </div>
+            {items.length > 0 ? (
+              <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {items.map((item) => (
+                  <button
+                    key={item.ticker}
+                    type="button"
+                    onClick={() => onOpen(item.ticker)}
+                    className={`rounded-xl border px-3.5 py-3 text-left transition-all hover:-translate-y-0.5 ${
+                      item.pnl > 0
+                        ? "border-[#00a650]/15 bg-[#e7f6ec] hover:bg-[#d9f0e2]"
+                        : item.pnl < 0
+                          ? "border-[#e11d2e]/15 bg-[#fdeceb] hover:bg-[#f8ddd9]"
+                          : "border-black/5 bg-bg hover:bg-[#eef6ef]"
+                    }`}
+                  >
+                    <p className="flex items-center gap-2 text-2xl font-bold tracking-tight text-ink">
+                      <TickerLogo ticker={item.ticker} />
+                      {item.ticker}
+                    </p>
+                    <div className="mt-2.5 flex items-end justify-between gap-2 border-b border-line pb-2">
+                      <div>
+                        <p className="text-[11px] text-faint">Entry</p>
+                        <p className="text-base font-semibold tabular-nums tracking-tight text-ink">{showPrice(String(item.cost))}</p>
+                      </div>
+                      {item.costDate ? (
+                        <p className="text-right text-[11px] text-muted">ET {item.costDate}</p>
+                      ) : null}
+                    </div>
+                    <div className="mt-2 flex items-end justify-between gap-2 border-b border-line pb-2">
+                      <div>
+                        <p className="text-[11px] text-faint">Close</p>
+                        <p className={`text-base font-semibold tabular-nums tracking-tight ${sessionTone(item.open, String(item.close))}`}>
+                          <span className="mr-1">{sessionMove(item.open, String(item.close)).mark}</span>
+                          {showPrice(String(item.close))}
+                        </p>
+                      </div>
+                      {item.closeDate ? (
+                        <p className="text-right text-[11px] text-muted">ET {item.closeDate}</p>
+                      ) : null}
+                    </div>
+                    <div className="mt-2 flex items-end justify-between gap-3">
+                      <div>
+                        <p className="text-[11px] text-faint">Change</p>
+                        <span className={`mt-1 inline-block rounded-md px-2 py-0.5 text-xs font-semibold tabular-nums text-white ${pnlPill(item.pnl)}`}>
+                          {signedMoney(item.pnl)}
+                        </span>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[11px] text-faint">Return</p>
+                        <p className={`text-lg font-bold tabular-nums tracking-tight ${pnlTone(item.ret)}`}>{signedReturn(item.ret)}</p>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <p className="mt-3 px-1 text-sm text-muted">暂无</p>
+            )}
+          </section>
+          <div className="mt-3 grid grid-cols-2 gap-3">
             <button
-              key={item.ticker}
               type="button"
-              onClick={() => onOpen(item.ticker)}
-              className={`rounded-xl px-3 py-2.5 text-left transition-colors ${
-                item.pnl > 0 ? "bg-[#e7f6ec] hover:bg-[#d9f0e2]" : item.pnl < 0 ? "bg-[#fdeceb] hover:bg-[#f8ddd9]" : "bg-bg hover:bg-[#eef6ef]"
-              }`}
+              onClick={() => setPage("止盈")}
+              className="relative overflow-hidden rounded-2xl border border-black/5 bg-surface px-4 py-3.5 pr-24 text-left text-[#006747] shadow-xs transition-colors hover:bg-[#e8f6ee]"
             >
-              <p className="flex items-center gap-2 text-3xl font-bold tracking-tight text-ink">
-                <TickerLogo ticker={item.ticker} />
-                {item.ticker}
-              </p>
-              <div className="mt-2 flex items-end justify-between gap-2 border-b border-line pb-2">
-                <div>
-                  <p className="text-[11px] text-faint">Entry</p>
-                  <p className="text-base font-semibold tabular-nums tracking-tight text-ink">{showPrice(String(item.cost))}</p>
-                </div>
-                {item.costDate ? (
-                  <p className="text-right text-[11px] text-muted">ET {item.costDate}</p>
-                ) : null}
-              </div>
-              <div className="mt-2 flex items-end justify-between gap-2 border-b border-line pb-2">
-                <div>
-                  <p className="text-[11px] text-faint">Close</p>
-                  <p className={`text-base font-semibold tabular-nums tracking-tight ${sessionTone(item.open, String(item.close))}`}>
-                    <span className="mr-1">{sessionMove(item.open, String(item.close)).mark}</span>
-                    {showPrice(String(item.close))}
-                  </p>
-                </div>
-                {item.closeDate ? (
-                  <p className="text-right text-[11px] text-muted">ET {item.closeDate}</p>
-                ) : null}
-              </div>
-              <div className="mt-2 flex items-end justify-between gap-3">
-                <div>
-                  <p className="text-[11px] text-faint">Change</p>
-                  <span className={`mt-1 inline-block rounded-md px-2 py-0.5 text-sm font-semibold tabular-nums text-white ${pnlPill(item.pnl)}`}>
-                    {signedMoney(item.pnl)}
-                  </span>
-                </div>
-                <div className="text-right">
-                  <p className="text-[11px] text-faint">Return</p>
-                  <p className={`text-lg font-semibold tabular-nums tracking-tight ${pnlTone(item.ret)}`}>{signedReturn(item.ret)}</p>
-                </div>
-              </div>
+              <span className="block font-latin text-lg font-semibold tracking-[0.03em]">历史止盈</span>
+              <span className="mt-0.5 block text-xs text-muted">盈利离场 ({closed.filter((i) => i.kind === "止盈").length})</span>
+              <Stamp word="WIN" color="#14804a" />
             </button>
-          ))}
-        </div>
-          ) : (
-            <p className="mt-3 text-sm text-muted">暂无</p>
-          )}
-        </section>
-        <div className="mt-3 grid grid-cols-2 gap-2">
-          <button
-            type="button"
-            onClick={() => setPage("止盈")}
-            className="relative overflow-hidden rounded-2xl bg-surface px-4 py-3 pr-24 text-left text-[#006747] shadow-sm transition-colors hover:bg-[#e8f6ee]"
-          >
-            <span className="block font-latin text-lg font-medium tracking-[0.03em]">历史止盈</span>
-            <span className="mt-0.5 block text-xs text-muted">盈利离场</span>
-            <Stamp word="WIN" color="#14804a" />
-          </button>
-          <button
-            type="button"
-            onClick={() => setPage("止损")}
-            className="relative overflow-hidden rounded-2xl bg-surface px-4 py-3 pr-24 text-left text-bad shadow-sm transition-colors hover:bg-[#fdeceb]"
-          >
-            <span className="block font-latin text-lg font-medium tracking-[0.03em]">历史止损</span>
-            <span className="mt-0.5 block text-xs text-muted">亏损离场</span>
-            <Stamp word="LOSS" color="#8e8e93" />
-          </button>
-        </div>
+            <button
+              type="button"
+              onClick={() => setPage("止损")}
+              className="relative overflow-hidden rounded-2xl border border-black/5 bg-surface px-4 py-3.5 pr-24 text-left text-bad shadow-xs transition-colors hover:bg-[#fdeceb]"
+            >
+              <span className="block font-latin text-lg font-semibold tracking-[0.03em]">历史止损</span>
+              <span className="mt-0.5 block text-xs text-muted">亏损离场 ({closed.filter((i) => i.kind === "止损").length})</span>
+              <Stamp word="LOSS" color="#8e8e93" />
+            </button>
+          </div>
         </>
       )}
     </section>
@@ -590,6 +604,51 @@ function moveDate(iso: string) {
   return `${part("year")}-${part("month")}-${part("day")}`;
 }
 
+/** 区间位置可视化进度条组件 */
+function MiniZoneBar({
+  lowRaw,
+  highRaw,
+  closeRaw,
+  kind,
+}: {
+  lowRaw: string;
+  highRaw: string;
+  closeRaw: string;
+  kind: WatchState;
+}) {
+  const low = Number(lowRaw);
+  const high = Number(highRaw);
+  const close = Number(closeRaw);
+  if (!Number.isFinite(low) || !Number.isFinite(high) || !Number.isFinite(close) || high <= low) return null;
+
+  // 将展示边界向外扩展 15%，让突破/跌破的位置也能在进度条两端体现出来
+  const span = high - low;
+  const minView = low - span * 0.25;
+  const maxView = high + span * 0.25;
+  const pct = Math.min(100, Math.max(0, ((close - minView) / (maxView - minView)) * 100));
+  const zoneStart = ((low - minView) / (maxView - minView)) * 100;
+  const zoneWidth = ((high - low) / (maxView - minView)) * 100;
+
+  const isBreakout = kind === "右侧突破";
+  const barColor = isBreakout ? "bg-[#00a650]" : kind === "破位走空" ? "bg-[#e11d2e]" : "bg-[#d97706]";
+  const zoneBg = isBreakout ? "bg-[#00a650]/20" : kind === "破位走空" ? "bg-[#e11d2e]/20" : "bg-[#d97706]/20";
+
+  return (
+    <div className="mt-2">
+      <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-black/5">
+        <div
+          className={`absolute top-0 bottom-0 ${zoneBg}`}
+          style={{ left: `${zoneStart}%`, width: `${zoneWidth}%` }}
+        />
+        <span
+          className={`absolute top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white shadow-2xs ${barColor}`}
+          style={{ left: `${pct}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
 function WatchCards({
   rows,
   moves,
@@ -605,10 +664,10 @@ function WatchCards({
   onFocus: (state: WatchState | "变动" | null) => void;
   onOpen: (level: Level) => void;
 }) {
-  const groups: { title: WatchState; label: string; rangeLabel: string }[] = [
-    { title: "右侧突破", label: "Breakout", rangeLabel: "右侧区间为" },
-    { title: "破位走空", label: "Breakdown", rangeLabel: "破位走空区间为" },
-    { title: "破位走弱", label: "Weakening", rangeLabel: "破位走弱区间为" },
+  const groups: { title: WatchState; label: string; badgeTone: string; rangeLabel: string }[] = [
+    { title: "右侧突破", label: "Breakout", badgeTone: "bg-[#e7f6ec] text-[#006747]", rangeLabel: "右侧区间" },
+    { title: "破位走空", label: "Breakdown", badgeTone: "bg-[#fdeceb] text-[#b91c1c]", rangeLabel: "走空区间" },
+    { title: "破位走弱", label: "Weakening", badgeTone: "bg-[#fef3c7] text-[#92400e]", rangeLabel: "走弱区间" },
   ];
   const boardFocus = focus === "变动" ? null : focus;
   const visible = boardFocus ? groups.filter((group) => group.title === boardFocus) : focus === "变动" ? [] : groups;
@@ -616,7 +675,7 @@ function WatchCards({
     (a, b) => b.movedAt.localeCompare(a.movedAt) || b.id - a.id,
   );
   return (
-    <div className={focus ? "max-w-xl" : "relative z-10 mt-6 grid min-w-0 grid-cols-1 gap-4 lg:grid-cols-4"}>
+    <div className={focus ? "mx-auto mt-6 max-w-xl" : "relative z-10 mt-6 grid min-w-0 grid-cols-1 gap-4 lg:grid-cols-4"}>
       {visible.map((group) => {
         const matched = rows
           .filter(
@@ -631,113 +690,150 @@ function WatchCards({
           .sort((a, b) => (entered[b.ticker.toUpperCase()] ?? "").localeCompare(entered[a.ticker.toUpperCase()] ?? ""));
         const items = boardFocus ? matched : matched.slice(0, 6);
         return (
-          <section key={group.title} className="card-shadow min-w-0 overflow-hidden rounded-3xl bg-surface p-5">
-            {focus ? (
-              <button type="button" className="text-sm text-muted" onClick={() => onFocus(null)}>
-                返回
-              </button>
-            ) : null}
-            <h2 className={`font-latin text-3xl font-medium tracking-[0.04em] text-[#006747] ${focus ? "mt-3" : ""}`}>
-              {group.label}
-            </h2>
-            {items.length === 0 ? <p className="mt-4 text-sm text-muted">暂无</p> : null}
-            <ul className="mt-3">
-              {items.map((level) => {
-                const hit = watchMatch(level.brief, level.lastClose, level.lastOpen);
-                const zone =
-                  hit?.kind === group.title ? hit.zone : group.title === "右侧突破" ? rightBreakZone(level.brief) : hit?.zone;
-                const closeTime = usCashCloseLabel(level.closeAt || level.updatedAt);
-                return (
-                  <li key={level.id} className="relative border-b border-line last:border-0">
-                    <button
-                      type="button"
-                      className="relative -mx-2 block w-[calc(100%+1rem)] min-w-0 rounded-xl px-2 py-3 text-left transition-colors hover:bg-[#eef6ef]"
-                      onClick={() => onOpen(level)}
-                    >
-                      <span className="flex items-center gap-2 pr-8 text-xl font-bold text-ink">
-                        <TickerLogo ticker={level.ticker || level.name} />
-                        {level.ticker || level.name}
+          <section key={group.title} className="card-shadow flex min-w-0 flex-col justify-between overflow-hidden rounded-3xl border border-black/5 bg-surface p-5">
+            <div>
+              {focus ? (
+                <button type="button" className="inline-flex items-center gap-1 text-sm font-medium text-muted hover:text-ink" onClick={() => onFocus(null)}>
+                  ← 返回看板
+                </button>
+              ) : null}
+              <div className={`flex items-center justify-between ${focus ? "mt-3" : ""}`}>
+                <h2 className="font-latin text-2xl font-semibold tracking-[0.03em] text-[#006747]">
+                  {group.label}
+                </h2>
+                <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${group.badgeTone}`}>
+                  {group.title} · {matched.length}
+                </span>
+              </div>
+              {items.length === 0 ? <p className="mt-6 text-center text-sm text-muted">暂无信号</p> : null}
+              <ul className="mt-3 divide-y divide-line">
+                {items.map((level) => {
+                  const hit = watchMatch(level.brief, level.lastClose, level.lastOpen);
+                  const zone =
+                    hit?.kind === group.title ? hit.zone : group.title === "右侧突破" ? rightBreakZone(level.brief) : hit?.zone;
+                  const closeTime = usCashCloseLabel(level.closeAt || level.updatedAt);
+                  const moveInfo = sessionMove(level.lastOpen, level.lastClose);
+                  return (
+                    <li key={level.id} className="relative py-1">
+                      <button
+                        type="button"
+                        className="group -mx-2 block w-[calc(100%+1rem)] min-w-0 rounded-2xl px-2.5 py-2.5 text-left transition-colors hover:bg-[#f2f7f4]"
+                        onClick={() => onOpen(level)}
+                      >
+                        <div className="flex items-start justify-between gap-2 pr-7">
+                          <div className="min-w-0 flex-1">
+                            <span className="flex items-center gap-2 text-lg font-bold text-ink">
+                              <TickerLogo ticker={level.ticker || level.name} />
+                              <span className="truncate">{level.ticker || level.name}</span>
+                            </span>
+                            {level.name && level.ticker ? (
+                              <span className="mt-0.5 block truncate text-xs text-faint">{level.name}</span>
+                            ) : null}
+                          </div>
+                          <div className="shrink-0 text-right">
+                            <span className={`inline-flex items-center gap-0.5 text-base font-bold leading-none tabular-nums ${moveInfo.tone}`}>
+                              <span className="text-xs">{moveInfo.mark}</span>
+                              {showPrice(level.lastClose) === "—" ? "—" : `$${showPrice(level.lastClose)}`}
+                            </span>
+                            <span className="mt-1 block text-[10px] text-faint">
+                              {closeTime ? `ET ${closeTime.replace(" ET", "")}` : "收盘价"}
+                            </span>
+                          </div>
+                        </div>
+
+                        {zone ? (
+                          <div className="mt-2">
+                            <div className="flex items-center justify-between text-[11px] text-muted">
+                              <span>{group.rangeLabel}</span>
+                              <span className="font-semibold tabular-nums text-ink">{zone.low} – {zone.high}</span>
+                            </div>
+                            <MiniZoneBar lowRaw={zone.low} highRaw={zone.high} closeRaw={level.lastClose} kind={group.title} />
+                          </div>
+                        ) : null}
+                      </button>
+                      <span className="absolute right-1.5 top-3.5 z-20">
+                        <WatchMark ticker={level.ticker || level.name} quiet />
                       </span>
-                      {level.name && level.ticker ? (
-                        <span className="mt-0.5 block truncate pr-28 text-xs text-faint">{level.name}</span>
-                      ) : null}
-                      <span className="mt-1 block whitespace-nowrap pr-28 text-xs leading-5 text-faint">
-                        {closeTime ? `ET ${closeTime.replace(" ET", "")} 收盘价` : "收盘价"}
-                      </span>
-                      {zone ? (
-                        <span className="mt-0.5 block whitespace-nowrap pr-28 text-xs leading-5 text-muted">
-                          {group.rangeLabel}：{zone.low}–{zone.high}
-                        </span>
-                      ) : null}
-                      <span className={`absolute right-2 bottom-3 flex items-end gap-1 text-lg font-bold leading-none tabular-nums ${sessionTone(level.lastOpen, level.lastClose)}`}>
-                        <span>{sessionMove(level.lastOpen, level.lastClose).mark}</span>
-                        {showPrice(level.lastClose) === "—" ? "—" : `$${showPrice(level.lastClose)}`}
-                      </span>
-                    </button>
-                    <span className="absolute right-1 top-3 z-20">
-                      <WatchMark ticker={level.ticker || level.name} quiet />
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
             {!boardFocus && matched.length > 6 ? (
               <button
                 type="button"
-                className="mt-4 text-sm font-medium text-ink"
+                className="mt-4 w-full rounded-xl bg-bg py-2 text-center text-xs font-semibold text-ink transition-colors hover:bg-[#e8ede9]"
                 onClick={() => onFocus(group.title)}
               >
-                查看全部
+                查看全部 ({matched.length})
               </button>
             ) : null}
           </section>
         );
       })}
       {focus === "变动" || focus == null ? (
-        <section className="card-shadow min-w-0 overflow-hidden rounded-3xl bg-surface p-5">
-          {focus === "变动" ? (
-            <button type="button" className="text-sm text-muted" onClick={() => onFocus(null)}>
-              返回
-            </button>
-          ) : null}
-          <h2 className={`font-latin text-3xl font-medium tracking-[0.04em] text-[#006747] ${focus === "变动" ? "mt-3" : ""}`}>
-            Changes
-          </h2>
-          {shownMoves.length === 0 ? <p className="mt-4 text-sm text-muted">暂无</p> : null}
-          <ul className="mt-3">
-            {shownMoves.map((move) => {
-              const level = rows.find((item) => item.ticker.toUpperCase() === move.ticker);
-              const date = moveDate(move.movedAt);
-              return (
-                <li key={move.id} className="border-b border-line last:border-0">
-                  <button
-                    type="button"
-                    className="-mx-2 block w-[calc(100%+1rem)] min-w-0 rounded-xl px-2 py-3 text-left transition-colors hover:bg-[#eef6ef]"
-                    onClick={() => {
-                      if (level) onOpen(level);
-                    }}
-                  >
-                    <span className="flex items-center gap-2 text-xl font-bold text-ink">
-                      <TickerLogo ticker={move.ticker} />
-                      {move.ticker}
-                    </span>
-                    {move.name ? <span className="mt-0.5 block truncate text-xs text-faint">{move.name}</span> : null}
-                    <span className="mt-1 block text-sm text-ink">
-                      {move.action === "加入" ? (
-                        <span className="font-bold text-[#6d28d9]">增加到{move.board}板块</span>
-                      ) : (
-                        `${move.ticker}从${move.board}板块中删除`
-                      )}
-                    </span>
-                    <span className="mt-0.5 block text-xs text-faint">{date}</span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
+        <section className="card-shadow flex min-w-0 flex-col justify-between overflow-hidden rounded-3xl border border-black/5 bg-surface p-5">
+          <div>
+            {focus === "变动" ? (
+              <button type="button" className="inline-flex items-center gap-1 text-sm font-medium text-muted hover:text-ink" onClick={() => onFocus(null)}>
+                ← 返回看板
+              </button>
+            ) : null}
+            <div className={`flex items-center justify-between ${focus === "变动" ? "mt-3" : ""}`}>
+              <h2 className="font-latin text-2xl font-semibold tracking-[0.03em] text-[#006747]">
+                Changes
+              </h2>
+              <span className="rounded-full bg-[#f3e8ff] px-2.5 py-0.5 text-xs font-semibold text-[#6d28d9]">
+                板块异动
+              </span>
+            </div>
+            {shownMoves.length === 0 ? <p className="mt-6 text-center text-sm text-muted">暂无异动</p> : null}
+            <ul className="mt-3 divide-y divide-line">
+              {shownMoves.map((move) => {
+                const level = rows.find((item) => item.ticker.toUpperCase() === move.ticker);
+                const date = moveDate(move.movedAt);
+                const isAdd = move.action === "加入";
+                return (
+                  <li key={move.id} className="py-1">
+                    <button
+                      type="button"
+                      className="-mx-2 block w-[calc(100%+1rem)] min-w-0 rounded-2xl px-2.5 py-2.5 text-left transition-colors hover:bg-[#f2f7f4]"
+                      onClick={() => {
+                        if (level) onOpen(level);
+                      }}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="flex items-center gap-2 text-lg font-bold text-ink">
+                          <TickerLogo ticker={move.ticker} />
+                          {move.ticker}
+                        </span>
+                        <span className="text-[11px] tabular-nums text-faint">{date}</span>
+                      </div>
+                      {move.name ? <span className="mt-0.5 block truncate text-xs text-faint">{move.name}</span> : null}
+                      <span className="mt-1.5 inline-flex items-center gap-1.5 text-xs">
+                        {isAdd ? (
+                          <span className="rounded-md bg-[#f3e8ff] px-2 py-0.5 font-semibold text-[#6d28d9]">
+                            + 加入 {move.board}
+                          </span>
+                        ) : (
+                          <span className="rounded-md bg-black/5 px-2 py-0.5 font-medium text-muted">
+                            - 移出 {move.board}
+                          </span>
+                        )}
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
           {focus == null && moves.length > 6 ? (
-            <button type="button" className="mt-4 text-sm font-medium text-ink" onClick={() => onFocus("变动")}>
-              查看全部
+            <button
+              type="button"
+              className="mt-4 w-full rounded-xl bg-bg py-2 text-center text-xs font-semibold text-ink transition-colors hover:bg-[#e8ede9]"
+              onClick={() => onFocus("变动")}
+            >
+              查看全部 ({moves.length})
             </button>
           ) : null}
         </section>
@@ -790,7 +886,7 @@ function StockPanel({
       {backHref ? (
         <a
           href={backHref}
-          className="mb-6 inline-flex h-10 items-center gap-2 rounded-full border border-black/10 bg-white px-4 text-sm tracking-wide text-ink transition-colors duration-300 hover:bg-transparent active:bg-transparent"
+          className="mb-6 inline-flex h-10 items-center gap-2 rounded-full border border-black/10 bg-white px-4 text-sm font-medium tracking-wide text-ink shadow-2xs transition-colors duration-200 hover:bg-[#eef6ef]"
         >
           <svg viewBox="0 0 16 16" aria-hidden="true" className="size-3.5">
             <path d="M10.2 2.8 5 8l5.2 5.2" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
@@ -801,7 +897,7 @@ function StockPanel({
         <button
           type="button"
           onClick={onBack}
-          className="mb-6 inline-flex h-10 items-center gap-2 rounded-full border border-black/10 bg-white px-4 text-sm tracking-wide text-ink transition-colors duration-300 hover:bg-transparent active:bg-transparent"
+          className="mb-6 inline-flex h-10 items-center gap-2 rounded-full border border-black/10 bg-white px-4 text-sm font-medium tracking-wide text-ink shadow-2xs transition-colors duration-200 hover:bg-[#eef6ef]"
         >
           <svg viewBox="0 0 16 16" aria-hidden="true" className="size-3.5">
             <path d="M10.2 2.8 5 8l5.2 5.2" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
@@ -811,51 +907,53 @@ function StockPanel({
       )}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <TickerLogo ticker={level.ticker || level.name} />
-        <h2 className="text-5xl font-semibold tracking-tight">{level.ticker || level.name}</h2>
+        <h2 className="text-4xl font-bold tracking-tight md:text-5xl">{level.ticker || level.name}</h2>
         <WatchMark ticker={level.ticker || level.name} />
-        {level.name && level.ticker ? <span className="text-sm text-faint">{level.name}</span> : null}
+        {level.name && level.ticker ? <span className="text-sm font-medium text-faint">{level.name}</span> : null}
       </div>
       {level.comment.trim() ? (
-        <section className="mt-5 border-l-2 border-[#1a4b7a] pl-4">
-          <h3 className="text-xs tracking-wide text-faint">快评</h3>
-          <p className="mt-2 whitespace-pre-wrap text-base leading-8 text-ink">{level.comment.trim()}</p>
-          {usEasternStamp(level.commentAt) ? (
-            <p className="mt-2 text-xs text-faint">最后修改 {usEasternStamp(level.commentAt)}</p>
-          ) : null}
+        <section className="mt-5 rounded-2xl border border-[#1a4b7a]/15 bg-white/80 p-4 shadow-2xs">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs font-bold tracking-wide text-[#1a4b7a]">交易员快评</h3>
+            {usEasternStamp(level.commentAt) ? (
+              <p className="text-[11px] text-faint">更新于 {usEasternStamp(level.commentAt)}</p>
+            ) : null}
+          </div>
+          <p className="mt-2 whitespace-pre-wrap text-sm leading-7 text-ink md:text-base">{level.comment.trim()}</p>
         </section>
       ) : null}
-      <div className="mt-6 grid items-start gap-4 md:grid-cols-[minmax(0,1fr)_18rem]">
-      <div className="card-shadow rounded-3xl bg-surface p-6 md:p-8">
-        <ZoneChain
-          support={brief.support}
-          resistance={brief.resistance}
-          close={level.lastClose}
-          closeAt={level.closeAt}
-          openAt={level.openAt}
-          open={level.lastOpen || facts?.open}
-          prevClose={facts?.prevClose}
-          supportAt={level.supportAt}
-          resistanceAt={level.resistanceAt}
-        />
-        {rightBreak ? (
-          <div className="mt-6 rounded-2xl bg-good-soft px-4 py-3">
-            <p className="text-xs font-medium text-good">右侧已突破 · 收盘</p>
-            <p className="mt-1 text-3xl font-semibold tracking-tight text-good tabular-nums">{showPrice(String(rightBreak.c))}</p>
-            <p className="mt-1 text-xs text-good">于美东 {candleDay(rightBreak.t)} 收盘价 {showPrice(String(rightBreak.c))} 突破了右侧</p>
-          </div>
-        ) : null}
-        {emptyBreak ? (
-          <div className="mt-6 rounded-2xl bg-bad-soft px-4 py-3">
-            <p className="text-xs font-medium text-bad">破位走空 · 收盘</p>
-            <p className="mt-1 text-3xl font-semibold tracking-tight text-bad tabular-nums">{showPrice(String(emptyBreak.c))}</p>
-            <p className="mt-1 text-xs text-bad">于美东 {candleDay(emptyBreak.t)} 收盘价 {showPrice(String(emptyBreak.c))} 破位走空</p>
-          </div>
-        ) : null}
-      </div>
-      <div className="grid gap-4">
-        <FactsCard facts={facts} />
-        <ValueCard price={level.lastClose} year2026={level.value2026} year2027={level.value2027} />
-      </div>
+      <div className="mt-6 grid items-start gap-4 md:grid-cols-[minmax(0,1fr)_18.5rem]">
+        <div className="card-shadow rounded-3xl border border-black/5 bg-surface p-6 md:p-8">
+          <ZoneChain
+            support={brief.support}
+            resistance={brief.resistance}
+            close={level.lastClose}
+            closeAt={level.closeAt}
+            openAt={level.openAt}
+            open={level.lastOpen || facts?.open}
+            prevClose={facts?.prevClose}
+            supportAt={level.supportAt}
+            resistanceAt={level.resistanceAt}
+          />
+          {rightBreak ? (
+            <div className="mt-6 rounded-2xl border border-good/20 bg-good-soft px-4 py-3.5">
+              <p className="text-xs font-semibold text-good">右侧已突破 · 收盘确认</p>
+              <p className="mt-1 text-3xl font-bold tracking-tight text-good tabular-nums">{showPrice(String(rightBreak.c))}</p>
+              <p className="mt-1 text-xs text-good">于美东 {candleDay(rightBreak.t)} 收盘价 {showPrice(String(rightBreak.c))} 站稳右侧区间</p>
+            </div>
+          ) : null}
+          {emptyBreak ? (
+            <div className="mt-6 rounded-2xl border border-bad/20 bg-bad-soft px-4 py-3.5">
+              <p className="text-xs font-semibold text-bad">破位走空 · 收盘确认</p>
+              <p className="mt-1 text-3xl font-bold tracking-tight text-bad tabular-nums">{showPrice(String(emptyBreak.c))}</p>
+              <p className="mt-1 text-xs text-bad">于美东 {candleDay(emptyBreak.t)} 收盘价 {showPrice(String(emptyBreak.c))} 跌破关键支撑</p>
+            </div>
+          ) : null}
+        </div>
+        <div className="grid gap-4">
+          <FactsCard facts={facts} />
+          <ValueCard price={level.lastClose} year2026={level.value2026} year2027={level.value2027} />
+        </div>
       </div>
       <CandleCard ticker={level.ticker} />
       <ThreeCandleCard ticker={level.ticker} />
@@ -1058,14 +1156,14 @@ function CandleCard({ ticker }: { ticker: string }) {
   }, [span, series.length]);
 
   return (
-    <section className="card-shadow mt-4 rounded-3xl bg-surface px-5 py-5 md:px-6">
+    <section className="card-shadow mt-4 rounded-3xl border border-black/5 bg-surface px-5 py-5 md:px-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h3 className="text-base font-bold text-ink">{span === "week" ? "近两年周K" : "近两年日K"}</h3>
           <p className="mt-1 text-xs text-faint">已收盘，含成交量、RSI6 和 RSI24。不是实时。</p>
         </div>
         {focus ? (
-          <p className={`text-xs tabular-nums ${up ? "text-[#00a650]" : "text-bad"}`}>
+          <p className={`text-xs font-medium tabular-nums ${up ? "text-[#00a650]" : "text-bad"}`}>
             {candleDay(focus.t)} 开 {focus.o.toFixed(2)} 高 {focus.h.toFixed(2)} 低 {focus.l.toFixed(2)} 收 {focus.c.toFixed(2)} 量 {formatVolume(focus.v)}
             {focus.rsi6 != null ? ` RSI6 ${focus.rsi6.toFixed(1)}` : ""}
             {focus.rsi24 != null ? ` RSI24 ${focus.rsi24.toFixed(1)}` : ""}
@@ -1078,14 +1176,14 @@ function CandleCard({ ticker }: { ticker: string }) {
         <button
           type="button"
           onClick={() => setSpan("day")}
-          className={`h-10 rounded-full px-5 text-sm font-medium ${span === "day" ? "bg-ink text-surface" : "bg-bg text-ink"}`}
+          className={`h-9 rounded-full px-4 text-xs font-semibold transition-colors ${span === "day" ? "bg-ink text-surface" : "bg-bg text-ink hover:bg-black/5"}`}
         >
           日线
         </button>
         <button
           type="button"
           onClick={() => setSpan("week")}
-          className={`h-10 rounded-full px-5 text-sm font-medium ${span === "week" ? "bg-ink text-surface" : "bg-bg text-ink"}`}
+          className={`h-9 rounded-full px-4 text-xs font-semibold transition-colors ${span === "week" ? "bg-ink text-surface" : "bg-bg text-ink hover:bg-black/5"}`}
         >
           周线
         </button>
@@ -1094,7 +1192,7 @@ function CandleCard({ ticker }: { ticker: string }) {
           {shown < total ? "。滚轮或两指缩放，放大后按住拖动。" : "。在图上滚轮或两指缩放。"}
         </span>
       </div>
-      {bars === null && !failed ? <div className="mt-4 h-72 rounded-2xl bg-bg" /> : null}
+      {bars === null && !failed ? <div className="mt-4 h-72 animate-pulse rounded-2xl bg-bg" /> : null}
       {failed || (bars && bars.length === 0) ? <p className="mt-4 text-sm text-muted">日K暂时读不出来。</p> : null}
       {view.length > 0 ? (
         <>
@@ -1151,7 +1249,7 @@ function ChartButton({ children, disabled, onClick }: { children: string; disabl
       type="button"
       disabled={disabled}
       onClick={onClick}
-      className="h-10 rounded-full bg-ink px-5 text-sm font-medium text-surface disabled:opacity-40"
+      className="h-9 rounded-full bg-ink px-4 text-xs font-semibold text-surface transition-opacity disabled:opacity-40"
     >
       {children}
     </button>
@@ -1344,16 +1442,16 @@ function CandleChart({ bars, onHover }: { bars: StudyBar[]; onHover: (bar: Study
 
 function FactsCard({ facts }: { facts: YahooFacts | null }) {
   const rows = [
-    ["市盈率", facts?.pe],
+    ["市盈率 (PE)", facts?.pe],
     ["今日最高", facts?.dayHigh],
     ["今日最低", facts?.dayLow],
   ] as const;
   return (
-    <section className="card-shadow rounded-3xl bg-surface px-6 py-5">
+    <section className="card-shadow rounded-3xl border border-black/5 bg-surface px-6 py-5">
       {rows.map(([label, value]) => (
         <div key={label} className="flex items-baseline justify-between gap-4 border-b border-line py-3 last:border-0">
           <span className="text-sm text-muted">{label}</span>
-          <span className="text-lg font-medium tabular-nums tracking-tight">
+          <span className="text-lg font-semibold tabular-nums tracking-tight">
             {facts == null ? "—" : value || "—"}
           </span>
         </div>
@@ -1385,9 +1483,9 @@ function ValueCard({ price, year2026, year2027 }: { price: string; year2026: str
   const shown = bands.filter((band): band is { low: number; high: number } => band != null);
   const now = Number(price);
   return (
-    <section className="overflow-hidden rounded-2xl border border-line bg-surface">
+    <section className="overflow-hidden rounded-3xl border border-black/5 bg-surface shadow-xs">
       <div className="px-5 pt-4 pb-4">
-        <p className="text-sm font-bold text-[#0a3d7a]">价值区间</p>
+        <p className="text-sm font-bold text-[#0a3d7a]">价值估值区间</p>
         {shown.length > 0 ? (
           <div className="mt-4 space-y-4">
             {bands.map((band, index) => {
@@ -1466,7 +1564,7 @@ function ValueGauge({
         <div className="absolute top-2 right-[8%] h-3.5 w-px bg-ink" />
         {spot != null ? (
           <span
-            className={`absolute top-1.5 size-3.5 -translate-x-1/2 rounded-full border-2 border-surface ${tone}`}
+            className={`absolute top-1.5 size-3.5 -translate-x-1/2 rounded-full border-2 border-surface shadow-xs ${tone}`}
             style={{ left: `${spot}%` }}
           />
         ) : null}
@@ -1493,7 +1591,7 @@ function RevisionRow({
     ["上沿", next.high - prior.high, prior.high],
   ] as const;
   return (
-    <div className="border-t border-line px-5 py-3">
+    <div className="border-t border-line bg-[#fafaf8] px-5 py-3">
       <p className="text-[11px] font-semibold tracking-[0.14em] text-muted">2027 相对 2026</p>
       <div className="mt-2 space-y-1">
         {rows.map(([label, delta, base]) => {
