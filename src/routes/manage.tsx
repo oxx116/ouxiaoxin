@@ -33,16 +33,19 @@ const empty = {
   comment: "",
 };
 
+type AdminTab = "levels" | "holdings" | "exits";
+
 function ManagePage() {
   const { user, isPending } = useCurrentUserState();
   const [access, setAccess] = useState<"loading" | "admin" | "locked" | "open">("loading");
+  const [tab, setTab] = useState<AdminTab>("levels");
   const [rows, setRows] = useState<Level[]>([]);
   const [draft, setDraft] = useState(empty);
   const [editing, setEditing] = useState<number | null>(null);
   const [message, setMessage] = useState("");
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
-  const [bookOpen, setBookOpen] = useState(false);
+
   const [holdings, setHoldings] = useState<BreakoutHolding[]>([]);
   const [bookTicker, setBookTicker] = useState("");
   const [bookCost, setBookCost] = useState("");
@@ -51,7 +54,7 @@ function ManagePage() {
   const [bookEditing, setBookEditing] = useState(false);
   const [bookQuery, setBookQuery] = useState("");
   const [dropTicker, setDropTicker] = useState("");
-  const [exitOpen, setExitOpen] = useState(false);
+
   const [exits, setExits] = useState<BreakoutExit[]>([]);
   const [exitId, setExitId] = useState<number | null>(null);
   const [exitTicker, setExitTicker] = useState("");
@@ -62,6 +65,7 @@ function ManagePage() {
   const [exitQuery, setExitQuery] = useState("");
   const [exitKind, setExitKind] = useState<"全部" | "止盈" | "止损">("全部");
   const [dropExit, setDropExit] = useState<number | null>(null);
+
   const [listQuery, setListQuery] = useState("");
   const [listNeedle, setListNeedle] = useState("");
   const parsed = parseBrief(draft.brief);
@@ -95,7 +99,7 @@ function ManagePage() {
 
   if (isPending || (user && access === "loading")) {
     return (
-      <main className="mx-auto max-w-3xl px-5 py-16">
+      <main className="mx-auto max-w-4xl px-5 py-16">
         <div className="h-10 w-40 rounded-full bg-surface" />
       </main>
     );
@@ -145,6 +149,7 @@ function ManagePage() {
       setRows(await listLevels());
       setDraft(empty);
       setEditing(null);
+      setNote("位置与快评已保存。");
     } catch (cause) {
       setMessage(cause instanceof Error ? cause.message : "没有保存");
     } finally {
@@ -170,11 +175,29 @@ function ManagePage() {
   }
 
   return (
-    <main className="mx-auto max-w-3xl px-5 py-14 md:py-20">
-      <h1 className="text-4xl font-semibold tracking-tight md:text-5xl">更新位置。</h1>
-      <p className="mt-3 text-sm leading-6 text-muted">
-        支撑和压力贴一整段。第一行写代码，然后写「支撑」「压力」，一行一个区间。右侧突破写在对应压力那一行，例如 120-130（强）右侧突破。收盘价高于 130 算右侧突破；收盘价跌破 120 会改到破位走弱。破位走空写在对应支撑那一行，例如 320-350（强）破位走空，或 320-350（强）破位做头。名称和收盘价从 Yahoo 读取。
-      </p>
+    <main className="mx-auto max-w-4xl px-5 py-12 md:py-16">
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-black/10 pb-6">
+        <div>
+          <span className="text-xs font-semibold tracking-wider text-[#006747] uppercase">Admin Console</span>
+          <h1 className="mt-1 text-3xl font-bold tracking-tight md:text-4xl">策略与位置控制台</h1>
+        </div>
+        {access === "admin" ? (
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => void pullQuotes()}
+            className="h-11 rounded-full bg-ink px-5 text-sm font-semibold text-surface shadow-xs transition-opacity disabled:opacity-60"
+          >
+            {busy ? "同步中..." : "刷新全部 Yahoo 股价"}
+          </button>
+        ) : null}
+      </div>
+
+      {note ? (
+        <div className="mt-4 rounded-2xl border border-[#00a650]/20 bg-[#e7f6ec] px-4 py-3 text-sm font-medium text-[#006747]">
+          {note}
+        </div>
+      ) : null}
 
       {access === "open" ? (
         <button
@@ -191,30 +214,233 @@ function ManagePage() {
 
       {access === "admin" ? (
         <>
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => void pullQuotes()}
-            className="mt-8 h-12 rounded-full bg-ink px-6 text-sm font-medium text-surface disabled:opacity-60"
-          >
-            重新拉取全部股价
-          </button>
-          {note ? <p className="mt-3 text-sm text-muted">{note}</p> : null}
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => setBookOpen((open) => !open)}
-            className="mt-3 h-12 rounded-full bg-surface px-6 text-sm font-medium text-ink card-shadow disabled:opacity-60"
-          >
-            右侧突破后的累计投资收益
-          </button>
-          {bookOpen ? (
-            <section className="card-shadow mt-4 space-y-4 rounded-3xl bg-surface p-6">
+          {/* 三大工作台导航 Tab */}
+          <nav className="mt-6 flex flex-wrap gap-2 rounded-2xl border border-black/5 bg-surface p-1.5 shadow-2xs">
+            <button
+              type="button"
+              onClick={() => setTab("levels")}
+              className={`flex-1 rounded-xl py-2.5 text-sm font-semibold transition-colors ${
+                tab === "levels" ? "bg-ink text-surface shadow-2xs" : "text-muted hover:text-ink"
+              }`}
+            >
+              支撑压力与快评 ({rows.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setTab("holdings")}
+              className={`flex-1 rounded-xl py-2.5 text-sm font-semibold transition-colors ${
+                tab === "holdings" ? "bg-ink text-surface shadow-2xs" : "text-muted hover:text-ink"
+              }`}
+            >
+              突破持仓账本 ({holdings.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setTab("exits")}
+              className={`flex-1 rounded-xl py-2.5 text-sm font-semibold transition-colors ${
+                tab === "exits" ? "bg-ink text-surface shadow-2xs" : "text-muted hover:text-ink"
+              }`}
+            >
+              历史止盈/止损 ({exits.length})
+            </button>
+          </nav>
+
+          {/* Tab 1: 支撑压力与快评 */}
+          {tab === "levels" ? (
+            <div className="mt-6 space-y-6">
+              <p className="rounded-2xl bg-surface/70 px-4 py-3 text-xs leading-6 text-muted">
+                格式说明：第一行写代码，然后写「支撑」「压力」，一行一个区间。例如 <code className="rounded bg-black/5 px-1">120-130（强）右侧突破</code> 或 <code className="rounded bg-black/5 px-1">320-350（强）破位走空</code>。名称和收盘价自动从 Yahoo 读取。
+              </p>
+
+              <form onSubmit={save} className="card-shadow space-y-4 rounded-3xl border border-black/5 bg-surface p-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-bold text-ink">{editing == null ? "新增个股观察" : `正在编辑：${draft.ticker}`}</h2>
+                  {editing != null ? (
+                    <button
+                      type="button"
+                      className="text-sm font-medium text-muted hover:text-ink"
+                      onClick={() => {
+                        setEditing(null);
+                        setDraft(empty);
+                      }}
+                    >
+                      退出编辑
+                    </button>
+                  ) : null}
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <Field
+                    label="股票代码"
+                    value={draft.ticker}
+                    placeholder="不填则自动识别正文第一行"
+                    onChange={(ticker) => setDraft({ ...draft, ticker })}
+                  />
+                  <div className="grid grid-cols-2 gap-3">
+                    <ValueField
+                      label="2026 价值区间"
+                      value={draft.value2026}
+                      placeholder="258-476"
+                      onChange={(value2026) => setDraft({ ...draft, value2026 })}
+                    />
+                    <ValueField
+                      label="2027 价值区间"
+                      value={draft.value2027}
+                      placeholder="333-614"
+                      onChange={(value2027) => setDraft({ ...draft, value2027 })}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <label className="block text-sm font-medium text-muted">
+                    支撑和压力正文
+                    <textarea
+                      value={draft.brief}
+                      rows={12}
+                      placeholder={"TSM\n支撑\n320-350（强）长线\n\n压力\n360-378（强）长线\n410-424（强）右侧突破"}
+                      onChange={(event) => {
+                        const brief = event.target.value;
+                        const next = parseBrief(brief);
+                        setDraft((current) => ({
+                          ...current,
+                          brief,
+                          ticker: current.ticker || next.ticker,
+                        }));
+                      }}
+                      className="mt-1.5 w-full rounded-2xl bg-bg px-4 py-3 text-sm leading-6 text-ink outline-none focus:ring-2 focus:ring-[#006747]/30"
+                    />
+                  </label>
+                  <label className="block text-sm font-medium text-muted">
+                    交易员快评
+                    <textarea
+                      value={draft.comment}
+                      rows={12}
+                      placeholder="对这只股票的形态、催化剂或风控看法。用户搜索后会显示在代码下方。"
+                      onChange={(event) => setDraft({ ...draft, comment: event.target.value })}
+                      className="mt-1.5 w-full rounded-2xl bg-bg px-4 py-3 text-sm leading-6 text-ink outline-none focus:ring-2 focus:ring-[#006747]/30"
+                    />
+                  </label>
+                </div>
+
+                {draft.brief.trim() ? (
+                  <div className="rounded-2xl border border-black/5 bg-bg/60 p-4">
+                    <p className="mb-2 text-xs font-semibold text-[#006747]">
+                      实时解析预览：支撑 {parsed.support.length} 档 · 压力 {parsed.resistance.length} 档
+                      {parsed.ticker ? ` · 代码 ${parsed.ticker}` : ""}
+                    </p>
+                    <ZoneChain support={parsed.support} resistance={parsed.resistance} close="" />
+                    {parsed.skipped.length > 0 ? (
+                      <p className="mt-3 text-xs font-medium text-bad">未识别行：{parsed.skipped.join("、")}</p>
+                    ) : null}
+                  </div>
+                ) : null}
+
+                {message ? <p className="text-sm font-medium text-bad">{message}</p> : null}
+                <div className="flex gap-3 pt-1">
+                  <button
+                    type="submit"
+                    disabled={busy}
+                    className="h-11 rounded-full bg-ink px-6 text-sm font-semibold text-surface disabled:opacity-60"
+                  >
+                    {editing == null ? "确认添加" : "保存修改"}
+                  </button>
+                </div>
+              </form>
+
+              <form
+                className="relative flex gap-2"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  setListNeedle(listQuery.trim().toUpperCase());
+                }}
+              >
+                <div className="relative min-w-0 flex-1">
+                  <input
+                    value={listQuery}
+                    placeholder="搜索已录入的代码或公司名，例如 TSM..."
+                    autoComplete="off"
+                    onChange={(event) => {
+                      const next = event.target.value;
+                      setListQuery(next);
+                      setListNeedle(next.trim().toUpperCase());
+                    }}
+                    className="card-shadow h-12 w-full rounded-full border border-black/5 bg-surface px-5 text-sm text-ink outline-none placeholder:text-faint"
+                  />
+                </div>
+                <button type="submit" className="h-12 shrink-0 rounded-full bg-ink px-5 text-sm font-medium text-surface">
+                  筛选
+                </button>
+              </form>
+
+              <div className="space-y-3">
+                {rows
+                  .filter((level) => {
+                    if (!listNeedle) return true;
+                    return level.ticker.toUpperCase().includes(listNeedle) || level.name.toUpperCase().includes(listNeedle);
+                  })
+                  .map((level) => {
+                    const brief = parseBrief(level.brief);
+                    return (
+                      <div key={level.id} className="flex items-center justify-between gap-3 rounded-2xl border border-black/5 bg-surface px-5 py-4 shadow-2xs">
+                        <div>
+                          <p className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                            <span className="flex items-center gap-2 text-lg font-bold text-ink">
+                              <TickerLogo ticker={level.ticker || level.name} />
+                              {level.ticker || level.name}
+                            </span>
+                            <span className="text-xs text-faint">更新 {level.updatedOn}</span>
+                          </p>
+                          <p className="mt-1 text-xs text-muted">
+                            {level.name && level.name !== level.ticker ? `${level.name} · ` : ""}
+                            支撑 {brief.support.length} 档 · 压力 {brief.resistance.length} 档
+                            {level.lastClose ? ` · 收盘 $${level.lastClose}` : ""}
+                          </p>
+                          <p className="mt-1 text-xs text-muted">
+                            2026: {valueText(level.value2026)} · 2027: {valueText(level.value2027)}
+                          </p>
+                        </div>
+                        <div className="flex shrink-0 gap-2">
+                          <button
+                            type="button"
+                            className="h-9 rounded-full bg-bg px-4 text-xs font-semibold text-ink hover:bg-black/5"
+                            onClick={() => {
+                              setEditing(level.id);
+                              setDraft({
+                                ticker: level.ticker,
+                                brief: level.brief,
+                                value2026: level.value2026,
+                                value2027: level.value2027,
+                                comment: level.comment,
+                              });
+                              window.scrollTo({ top: 0, behavior: "smooth" });
+                            }}
+                          >
+                            编辑
+                          </button>
+                          <button
+                            type="button"
+                            className="h-9 rounded-full px-3 text-xs font-medium text-bad hover:bg-bad/10"
+                            onClick={() => void remove(level.id)}
+                          >
+                            删除
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
+          ) : null}
+
+          {/* Tab 2: 突破持仓账本 */}
+          {tab === "holdings" ? (
+            <section className="card-shadow mt-6 space-y-5 rounded-3xl border border-black/5 bg-surface p-6">
               <p className="text-sm leading-6 text-muted">
-                这里只管理已经计入累计投资收益的股票。开盘价或收盘价触及止盈、止损后，会自动移出这个板块。止损必须低于止盈。
+                管理已计入累计投资收益的持仓股票。开盘价或收盘价触及止盈、止损后，系统会自动结算移出（止损必须低于止盈）。
               </p>
               <form
-                className="space-y-3"
+                className="grid gap-3 sm:grid-cols-2"
                 onSubmit={(event) => {
                   event.preventDefault();
                   setBusy(true);
@@ -247,18 +473,18 @@ function ManagePage() {
                 <Field label="建仓价格" value={bookCost} placeholder="回踩当天的收盘价" onChange={setBookCost} />
                 <Field label="止盈价格" value={bookTake} placeholder="可以留空" onChange={setBookTake} />
                 <Field label="止损价格" value={bookStop} placeholder="可以留空" onChange={setBookStop} />
-                <div className="flex gap-2">
+                <div className="flex gap-2 sm:col-span-2">
                   <button
                     type="submit"
                     disabled={busy}
-                    className="h-12 rounded-full bg-ink px-6 text-sm font-medium text-surface disabled:opacity-60"
+                    className="h-11 rounded-full bg-ink px-6 text-sm font-semibold text-surface disabled:opacity-60"
                   >
-                    {bookEditing ? "保存修改" : "添加"}
+                    {bookEditing ? "保存修改" : "添加持仓"}
                   </button>
                   {bookEditing ? (
                     <button
                       type="button"
-                      className="h-12 rounded-full px-5 text-sm text-muted"
+                      className="h-11 rounded-full px-5 text-sm text-muted"
                       onClick={() => {
                         setBookEditing(false);
                         setBookTicker("");
@@ -272,11 +498,12 @@ function ManagePage() {
                   ) : null}
                 </div>
               </form>
+
               <input
                 value={bookQuery}
-                placeholder="查找代码"
+                placeholder="查找持仓代码..."
                 onChange={(event) => setBookQuery(event.target.value)}
-                className="h-12 w-full rounded-full bg-bg px-5 text-base text-ink outline-none placeholder:text-faint"
+                className="h-11 w-full rounded-full bg-bg px-5 text-sm text-ink outline-none placeholder:text-faint"
               />
               <div className="space-y-3">
                 {holdings
@@ -286,28 +513,28 @@ function ManagePage() {
                     const close = Number(item.close);
                     const ret = Number.isFinite(cost) && cost > 0 && Number.isFinite(close) ? (close - cost) / cost : null;
                     return (
-                      <article key={item.ticker} className="rounded-2xl bg-bg px-4 py-3">
+                      <article key={item.ticker} className="rounded-2xl bg-bg px-4 py-3.5">
                         <div className="flex items-center justify-between gap-3">
-                          <p className="flex items-center gap-2 font-semibold text-ink">
+                          <p className="flex items-center gap-2 font-bold text-ink">
                             <TickerLogo ticker={item.ticker} />
                             {item.ticker}
                           </p>
-                          <p className={`text-sm font-semibold tabular-nums ${ret == null ? "text-muted" : ret > 0 ? "text-[#00a650]" : ret < 0 ? "text-bad" : "text-muted"}`}>
+                          <p className={`text-sm font-bold tabular-nums ${ret == null ? "text-muted" : ret > 0 ? "text-[#00a650]" : ret < 0 ? "text-bad" : "text-muted"}`}>
                             {ret == null ? "—" : `${ret > 0 ? "+" : ret < 0 ? "-" : ""}${Math.abs(ret * 100).toFixed(2)}%`}
                           </p>
                         </div>
-                        <p className="mt-2 text-sm text-muted">
+                        <p className="mt-2 text-xs text-muted">
                           建仓 {item.cost}
                           {item.enteredOn ? ` · ${item.enteredOn}` : ""}
                           {item.close ? ` · 现价 ${item.close}` : ""}
                         </p>
-                        <p className="mt-1 text-sm text-muted">
+                        <p className="mt-1 text-xs text-muted">
                           止盈 {item.takeProfit || "未设"} · 止损 {item.stopLoss || "未设"}
                         </p>
                         <div className="mt-3 flex gap-2">
                           <button
                             type="button"
-                            className="h-9 rounded-full bg-surface px-4 text-sm text-ink"
+                            className="h-8 rounded-full bg-surface px-4 text-xs font-semibold text-ink shadow-2xs"
                             onClick={() => {
                               setBookEditing(true);
                               setBookTicker(item.ticker);
@@ -322,7 +549,7 @@ function ManagePage() {
                           {dropTicker === item.ticker ? (
                             <button
                               type="button"
-                              className="h-9 rounded-full bg-bad px-4 text-sm text-white"
+                              className="h-8 rounded-full bg-bad px-4 text-xs font-semibold text-white"
                               onClick={() => {
                                 setBusy(true);
                                 void deleteBreakoutEntry({ data: { ticker: item.ticker } })
@@ -341,7 +568,7 @@ function ManagePage() {
                           ) : (
                             <button
                               type="button"
-                              className="h-9 rounded-full px-4 text-sm text-bad"
+                              className="h-8 rounded-full px-3 text-xs font-medium text-bad"
                               onClick={() => setDropTicker(item.ticker)}
                             >
                               删除
@@ -351,27 +578,18 @@ function ManagePage() {
                       </article>
                     );
                   })}
-                {holdings.filter((item) => item.ticker.includes(bookQuery.trim().toUpperCase())).length === 0 ? (
-                  <p className="text-sm text-muted">暂无</p>
-                ) : null}
               </div>
             </section>
           ) : null}
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => setExitOpen((open) => !open)}
-            className="mt-3 h-12 rounded-full bg-surface px-6 text-sm font-medium text-ink card-shadow disabled:opacity-60"
-          >
-            历史止盈和历史止损
-          </button>
-          {exitOpen ? (
-            <section className="card-shadow mt-4 space-y-4 rounded-3xl bg-surface p-6">
+
+          {/* Tab 3: 历史止盈/止损 */}
+          {tab === "exits" ? (
+            <section className="card-shadow mt-6 space-y-5 rounded-3xl border border-black/5 bg-surface p-6">
               <p className="text-sm leading-6 text-muted">
-                离场价高于建仓价记为止盈，低于建仓价记为止损。改完会重新算进累计收益。
+                离场价高于建仓价自动记为止盈，低于建仓价记为止损。修改后自动重算累计收益率。
               </p>
               <form
-                className="space-y-3"
+                className="grid gap-3 sm:grid-cols-2"
                 onSubmit={(event) => {
                   event.preventDefault();
                   setBusy(true);
@@ -401,22 +619,22 @@ function ManagePage() {
                 }}
               >
                 <Field label="股票代码" value={exitTicker} placeholder="例如 TSM" onChange={setExitTicker} />
-                <Field label="建仓价格" value={exitCost} placeholder="成本" onChange={setExitCost} />
-                <Field label="离场价格" value={exitPrice} placeholder="止盈或止损时的价格" onChange={setExitPrice} />
+                <Field label="建仓价格" value={exitCost} placeholder="成本价" onChange={setExitCost} />
+                <Field label="离场价格" value={exitPrice} placeholder="止盈或止损成交价" onChange={setExitPrice} />
                 <Field label="建仓日期" value={exitEntered} placeholder="2026-11-10，可留空" onChange={setExitEntered} />
                 <Field label="离场日期" value={exitLeft} placeholder="2026-11-10，可留空" onChange={setExitLeft} />
-                <div className="flex gap-2">
+                <div className="flex items-end gap-2">
                   <button
                     type="submit"
                     disabled={busy}
-                    className="h-12 rounded-full bg-ink px-6 text-sm font-medium text-surface disabled:opacity-60"
+                    className="h-12 rounded-full bg-ink px-6 text-sm font-semibold text-surface disabled:opacity-60"
                   >
-                    {exitId == null ? "添加" : "保存修改"}
+                    {exitId == null ? "添加记录" : "保存修改"}
                   </button>
                   {exitId != null ? (
                     <button
                       type="button"
-                      className="h-12 rounded-full px-5 text-sm text-muted"
+                      className="h-12 rounded-full px-4 text-sm text-muted"
                       onClick={() => {
                         setExitId(null);
                         setExitTicker("");
@@ -431,49 +649,51 @@ function ManagePage() {
                   ) : null}
                 </div>
               </form>
-              <div className="flex gap-2">
+
+              <div className="flex flex-wrap items-center gap-2">
                 {(["全部", "止盈", "止损"] as const).map((kind) => (
                   <button
                     key={kind}
                     type="button"
-                    className={`h-9 rounded-full px-4 text-sm ${exitKind === kind ? "bg-ink text-surface" : "bg-bg text-muted"}`}
+                    className={`h-9 rounded-full px-4 text-xs font-semibold ${exitKind === kind ? "bg-ink text-surface" : "bg-bg text-muted"}`}
                     onClick={() => setExitKind(kind)}
                   >
                     {kind}
                   </button>
                 ))}
+                <input
+                  value={exitQuery}
+                  placeholder="查找历史代码..."
+                  onChange={(event) => setExitQuery(event.target.value)}
+                  className="h-9 min-w-48 flex-1 rounded-full bg-bg px-4 text-xs text-ink outline-none placeholder:text-faint"
+                />
               </div>
-              <input
-                value={exitQuery}
-                placeholder="查找代码"
-                onChange={(event) => setExitQuery(event.target.value)}
-                className="h-12 w-full rounded-full bg-bg px-5 text-base text-ink outline-none placeholder:text-faint"
-              />
+
               <div className="space-y-3">
                 {exits
                   .filter((item) => (exitKind === "全部" ? true : item.kind === exitKind))
                   .filter((item) => item.ticker.includes(exitQuery.trim().toUpperCase()))
                   .map((item) => (
-                    <article key={item.id} className="rounded-2xl bg-bg px-4 py-3">
+                    <article key={item.id} className="rounded-2xl bg-bg px-4 py-3.5">
                       <div className="flex items-center justify-between gap-3">
-                        <p className="flex items-center gap-2 font-semibold text-ink">
+                        <p className="flex items-center gap-2 font-bold text-ink">
                           <TickerLogo ticker={item.ticker} />
                           {item.ticker}
                         </p>
-                        <p className={`text-sm font-semibold ${item.kind === "止盈" ? "text-[#00a650]" : "text-bad"}`}>
+                        <p className={`text-xs font-bold ${item.kind === "止盈" ? "text-[#00a650]" : "text-bad"}`}>
                           {item.kind}
                         </p>
                       </div>
-                      <p className="mt-2 text-sm text-muted">
+                      <p className="mt-2 text-xs text-muted">
                         建仓 {item.cost}
-                        {item.enteredOn ? ` · ${item.enteredOn}` : ""}
-                        {" · "}离场 {item.exitPrice}
-                        {item.exitedOn ? ` · ${item.exitedOn}` : ""}
+                        {item.enteredOn ? ` (${item.enteredOn})` : ""}
+                        {" → "}离场 {item.exitPrice}
+                        {item.exitedOn ? ` (${item.exitedOn})` : ""}
                       </p>
                       <div className="mt-3 flex gap-2">
                         <button
                           type="button"
-                          className="h-9 rounded-full bg-surface px-4 text-sm text-ink"
+                          className="h-8 rounded-full bg-surface px-4 text-xs font-semibold text-ink shadow-2xs"
                           onClick={() => {
                             setExitId(item.id);
                             setExitTicker(item.ticker);
@@ -489,7 +709,7 @@ function ManagePage() {
                         {dropExit === item.id ? (
                           <button
                             type="button"
-                            className="h-9 rounded-full bg-bad px-4 text-sm text-white"
+                            className="h-8 rounded-full bg-bad px-4 text-xs font-semibold text-white"
                             onClick={() => {
                               setBusy(true);
                               void deleteBreakoutExit({ data: { id: item.id } })
@@ -513,230 +733,16 @@ function ManagePage() {
                             确认删除
                           </button>
                         ) : (
-                          <button type="button" className="h-9 rounded-full px-4 text-sm text-bad" onClick={() => setDropExit(item.id)}>
+                          <button type="button" className="h-8 rounded-full px-3 text-xs font-medium text-bad" onClick={() => setDropExit(item.id)}>
                             删除
                           </button>
                         )}
                       </div>
                     </article>
                   ))}
-                {exits.filter((item) => (exitKind === "全部" ? true : item.kind === exitKind) && item.ticker.includes(exitQuery.trim().toUpperCase())).length === 0 ? (
-                  <p className="text-sm text-muted">暂无</p>
-                ) : null}
               </div>
             </section>
           ) : null}
-          <form onSubmit={save} className="card-shadow mt-6 space-y-3 rounded-3xl bg-surface p-6">
-            <div className="grid gap-3">
-              <Field
-                label="代码"
-                value={draft.ticker}
-                placeholder="不填则用正文第一行"
-                onChange={(ticker) => setDraft({ ...draft, ticker })}
-              />
-              <label className="block text-sm text-muted">
-                快评
-                <textarea
-                  value={draft.comment}
-                  rows={8}
-                  placeholder="对这只股票的看法。用户搜索后会显示在代码下方。"
-                  onChange={(event) => setDraft({ ...draft, comment: event.target.value })}
-                  className="mt-1 w-full rounded-2xl bg-bg px-4 py-3 text-base leading-6 text-ink outline-none"
-                />
-              </label>
-            </div>
-            <label className="block text-sm text-muted">
-              支撑和压力
-              <textarea
-                value={draft.brief}
-                rows={14}
-                placeholder={"TSM\n支撑\n320-350（强）长线\n\n压力\n360-378（强）长线\n410-424（强）右侧突破"}
-                onChange={(event) => {
-                  const brief = event.target.value;
-                  const next = parseBrief(brief);
-                  setDraft((current) => ({
-                    ...current,
-                    brief,
-                    ticker: current.ticker || next.ticker,
-                  }));
-                }}
-                className="mt-1 w-full rounded-2xl bg-bg px-4 py-3 text-base leading-6 text-ink outline-none"
-              />
-            </label>
-            <ValueField
-              label="2026 价值交易区间"
-              value={draft.value2026}
-              placeholder={"258-476\n也可以贴一整段，我会切出区间"}
-              onChange={(value2026) => setDraft({ ...draft, value2026 })}
-            />
-            <ValueField
-              label="2027 价值交易区间"
-              value={draft.value2027}
-              placeholder={"333-614"}
-              onChange={(value2027) => setDraft({ ...draft, value2027 })}
-            />
-            {draft.brief.trim() ? (
-              <div>
-                <p className="text-xs text-faint">
-                  切出支撑 {parsed.support.length} 档，压力 {parsed.resistance.length} 档
-                  {parsed.ticker ? `，代码 ${parsed.ticker}` : ""}
-                </p>
-                <ZoneChain support={parsed.support} resistance={parsed.resistance} close="" />
-                {parsed.skipped.length > 0 ? (
-                  <p className="mt-3 text-sm text-bad">没切开：{parsed.skipped.join("、")}</p>
-                ) : null}
-              </div>
-            ) : null}
-            {message ? <p className="text-sm text-bad">{message}</p> : null}
-            <div className="flex gap-3">
-              <button
-                type="submit"
-                disabled={busy}
-                className="h-11 rounded-full bg-ink px-5 text-sm font-medium text-surface disabled:opacity-60"
-              >
-                {editing == null ? "添加" : "保存"}
-              </button>
-              {editing != null ? (
-                <button
-                  type="button"
-                  className="h-11 rounded-full px-4 text-sm text-muted"
-                  onClick={() => {
-                    setEditing(null);
-                    setDraft(empty);
-                  }}
-                >
-                  取消
-                </button>
-              ) : null}
-            </div>
-          </form>
-
-          <form
-            className="relative mt-6 flex gap-2"
-            onSubmit={(event) => {
-              event.preventDefault();
-              setListNeedle(listQuery.trim().toUpperCase());
-            }}
-          >
-            <div className="relative min-w-0 flex-1">
-              <input
-                value={listQuery}
-                placeholder="搜索已添加的代码，例如 TSM"
-                autoComplete="off"
-                onChange={(event) => {
-                  const next = event.target.value;
-                  setListQuery(next);
-                  setListNeedle(next.trim().toUpperCase());
-                }}
-                className="card-shadow h-12 w-full rounded-full bg-surface px-5 text-base text-ink outline-none placeholder:text-faint"
-              />
-              {listQuery.trim() ? (
-                <ul className="card-shadow absolute top-14 z-10 w-full overflow-hidden rounded-3xl bg-surface">
-                  {rows
-                    .filter((level) => {
-                      const needle = listQuery.trim().toUpperCase();
-                      return (
-                        level.ticker.toUpperCase().includes(needle) || level.name.toUpperCase().includes(needle)
-                      );
-                    })
-                    .slice(0, 8)
-                    .map((level) => (
-                      <li key={level.id} className="border-b border-line last:border-0">
-                        <button
-                          type="button"
-                          className="flex h-12 w-full items-center justify-between px-5 text-left"
-                          onClick={() => {
-                            setListQuery(level.ticker);
-                            setListNeedle(level.ticker.toUpperCase());
-                          }}
-                        >
-                          <span className="flex items-center gap-2 font-medium">
-                            <TickerLogo ticker={level.ticker || level.name} />
-                            {level.ticker || level.name}
-                          </span>
-                          {level.name && level.ticker ? (
-                            <span className="truncate pl-3 text-sm text-faint">{level.name}</span>
-                          ) : null}
-                        </button>
-                      </li>
-                    ))}
-                  {rows.every((level) => {
-                    const needle = listQuery.trim().toUpperCase();
-                    return !level.ticker.toUpperCase().includes(needle) && !level.name.toUpperCase().includes(needle);
-                  }) ? (
-                    <li className="px-5 py-3 text-sm text-muted">没有这只股票</li>
-                  ) : null}
-                </ul>
-              ) : null}
-            </div>
-            <button type="submit" className="h-12 shrink-0 rounded-full bg-ink px-5 text-sm font-medium text-surface">
-              搜索
-            </button>
-          </form>
-
-          <div className="mt-4 space-y-3">
-            {rows
-              .filter((level) => {
-                if (!listNeedle) return true;
-                return level.ticker.toUpperCase().includes(listNeedle) || level.name.toUpperCase().includes(listNeedle);
-              })
-              .map((level) => {
-              const brief = parseBrief(level.brief);
-              return (
-                <div key={level.id} className="flex items-center justify-between gap-3 rounded-3xl bg-surface px-5 py-4 card-shadow">
-                  <div>
-                    <p className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                      <span className="flex items-center gap-2 font-semibold text-ink">
-                        <TickerLogo ticker={level.ticker || level.name} />
-                        {level.ticker || level.name}
-                      </span>
-                      <span className="text-xs text-faint">修改日期 {level.updatedOn}</span>
-                    </p>
-                    <p className="mt-1 text-sm text-muted">
-                      {level.name && level.name !== level.ticker ? `${level.name} · ` : ""}
-                      支撑 {brief.support.length} 档 · 压力 {brief.resistance.length} 档
-                      {level.lastClose ? ` · 收盘 ${level.lastClose}` : ""}
-                    </p>
-                    <p className="mt-1 text-sm text-muted">
-                      2026 {valueText(level.value2026)} · 2027 {valueText(level.value2027)}
-                    </p>
-                  </div>
-                  <div className="flex shrink-0 gap-2">
-                    <button
-                      type="button"
-                      className="h-10 rounded-full px-3 text-sm text-ink"
-                      onClick={() => {
-                        setEditing(level.id);
-                        setDraft({
-                          ticker: level.ticker,
-                          brief: level.brief,
-                          value2026: level.value2026,
-                          value2027: level.value2027,
-                          comment: level.comment,
-                        });
-                      }}
-                    >
-                      编辑
-                    </button>
-                    <button
-                      type="button"
-                      className="h-10 rounded-full px-3 text-sm text-bad"
-                      onClick={() => void remove(level.id)}
-                    >
-                      删除
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-            {listNeedle &&
-            rows.every(
-              (level) =>
-                !level.ticker.toUpperCase().includes(listNeedle) && !level.name.toUpperCase().includes(listNeedle),
-            ) ? (
-              <p className="text-sm text-muted">没有这只股票</p>
-            ) : null}
-          </div>
         </>
       ) : null}
     </main>
@@ -761,22 +767,19 @@ function ValueField({
 }) {
   const band = parseValueBand(value);
   return (
-    <label className="block text-sm text-muted">
+    <label className="block text-sm font-medium text-muted">
       {label}
-      <textarea
+      <input
         value={value}
-        rows={4}
         placeholder={placeholder}
         onChange={(event) => onChange(event.target.value)}
-        className="mt-1 w-full rounded-2xl bg-bg px-4 py-3 text-base leading-6 text-ink outline-none placeholder:text-faint"
+        className="mt-1.5 h-12 w-full rounded-2xl bg-bg px-4 text-sm text-ink outline-none placeholder:text-faint focus:ring-2 focus:ring-[#006747]/30"
       />
       {value.trim() ? (
-        <span className={`mt-1 block text-xs ${band ? "text-faint" : "text-bad"}`}>
-          {band ? `切出 ${band.low}–${band.high}，中位数 ${Math.round((band.low + band.high) / 2)}` : "没切开区间"}
+        <span className={`mt-1 block text-[11px] ${band ? "text-[#006747]" : "text-bad"}`}>
+          {band ? `区间 ${band.low}–${band.high} (中位 ${Math.round((band.low + band.high) / 2)})` : "格式未识别"}
         </span>
-      ) : (
-        <span className="mt-1 block text-xs text-faint">暂无数据</span>
-      )}
+      ) : null}
     </label>
   );
 }
@@ -793,13 +796,13 @@ function Field({
   placeholder?: string;
 }) {
   return (
-    <label className="block text-sm text-muted">
+    <label className="block text-sm font-medium text-muted">
       {label}
       <input
         value={value}
         placeholder={placeholder}
         onChange={(event) => onChange(event.target.value)}
-        className="mt-1 h-12 w-full rounded-2xl bg-bg px-4 text-base text-ink outline-none placeholder:text-faint"
+        className="mt-1.5 h-12 w-full rounded-2xl bg-bg px-4 text-sm text-ink outline-none placeholder:text-faint focus:ring-2 focus:ring-[#006747]/30"
       />
     </label>
   );
